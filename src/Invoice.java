@@ -5,22 +5,23 @@ public class Invoice
     private String title;
     private Address custAddress;
     private ArrayList<LineItem> lineItems;
-    private double totalAmount;
+    private double amountDue;
 
     //Invoice constructor
-    public Invoice (String title, Address custAddress, ArrayList<LineItem> lineItems, double totalAmount)
+    public Invoice (String title, Address custAddress, ArrayList<LineItem> lineItems)
     {
         this.title = title;
         this.custAddress = custAddress;
         this.lineItems = lineItems;
+        calculateAmountDue();
     }
 
-    private void calculateAmountDue()
+    public void calculateAmountDue()
     {
-        totalAmount = 0;
+        amountDue = 0;
         for (LineItem item : lineItems)
         {
-            totalAmount += item.getLineItemTotal();
+            amountDue += item.getLineItemTotal();
         }
     }
 
@@ -35,9 +36,7 @@ public class Invoice
 
     public ArrayList<LineItem> getLineItems() {return lineItems;}
 
-    public void setLineItems(ArrayList<LineItem> lineItems) {this.lineItems = lineItems;}
+    public double getAmountDue() {return amountDue;}
 
-    public double getTotalAmount() {return totalAmount;}
-
-    public void setTotalAmount(double totalAmount) {this.totalAmount = totalAmount;}
+    public void setAmountDue(double amountDue) {this.amountDue = amountDue;}
 }

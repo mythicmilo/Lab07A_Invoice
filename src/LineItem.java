@@ -12,7 +12,7 @@ public class LineItem
         calculateTotal();
     }
 
-    private void calculateTotal()
+    public void calculateTotal()
     {
         lineItemTotal = product.getUnitPrice() * quantity;
     }
