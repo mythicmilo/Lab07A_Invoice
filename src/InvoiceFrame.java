@@ -39,7 +39,7 @@ public class InvoiceFrame extends JFrame
         invoicePnl = new JPanel(new BorderLayout());
         titleLbl = new JLabel("INVOICE");
         titleLbl.setFont(new Font("Times New Roman", Font.BOLD, 24));
-        titleLbl.setHorizontalTextPosition(JLabel.CENTER);
+        titleLbl.setHorizontalAlignment(JLabel.CENTER);
         invoiceTA = new JTextArea(15, 25);
         invoiceTA.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         invoiceTA.setEditable(false);
@@ -110,7 +110,7 @@ public class InvoiceFrame extends JFrame
             invoiceTA.append(address.getCity() + ", " + address.getState() + ", " + address.getZip() + "\n\n");
             //print invoice
             invoiceTA.append(endLine + "\n");
-            String categories = String.format("%-20s%-9s%-9s%9s\n", "Item", "Qty", "Price", "Total");
+            String categories = String.format("%-20s%-10s%-9s%9s\n", "Item", "Qty", "Price", "Total");
             invoiceTA.append(categories);
             for (LineItem item : invoice.getLineItems())
             {
