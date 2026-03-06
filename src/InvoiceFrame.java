@@ -1,18 +1,19 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 public class InvoiceFrame extends JFrame
 {
-    private Invoice invoice;
-    private Product product;
-    private LineItem lineItem;
-    private Address address;
+    private Address address = new Address("name", "street", "city", "state", "zip");
+    private Product product = new Product("name", 0);
+    private LineItem lineItem = new LineItem(0, product);
+    private ArrayList<LineItem> lineItems = new ArrayList<>();
+    private Invoice invoice = new Invoice("invoice", address, lineItems);
 
-    JPanel mainPnl, inputPnl, invoicePnl, ctrlPnl;
-    JLabel titleLbl, custNameLbl, streetLbl, cityLbl, stateLbl, zipLbl;
-    JTextField custNameTF, streetTF, cityTF, stateTF, zipTF;
-    JTextArea lineItemsTA, custAddressTA;
+    JPanel mainPnl, invoicePnl, ctrlPnl;
+    JLabel titleLbl;
+    JTextArea invoiceTA;
     JButton quitBtn, addInvoiceBtn, doneBtn;
 
     int response;
@@ -27,9 +28,9 @@ public class InvoiceFrame extends JFrame
         createControlPanel();
 
         setTitle("Invoice Maker");
-        setSize(600, 800);
+        setSize(400, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pack();
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
@@ -39,16 +40,12 @@ public class InvoiceFrame extends JFrame
         titleLbl = new JLabel("INVOICE");
         titleLbl.setFont(new Font("Times New Roman", Font.BOLD, 24));
         titleLbl.setHorizontalTextPosition(JLabel.CENTER);
-        lineItemsTA = new JTextArea(15, 25);
-        lineItemsTA.setEditable(false);
-        lineItemsTA.setText("Test line");
-        custAddressTA = new JTextArea(5, 15);
-        custAddressTA.setEditable(false);
-        custAddressTA.setText("Test address");
+        invoiceTA = new JTextArea(15, 25);
+        invoiceTA.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        invoiceTA.setEditable(false);
 
         invoicePnl.add(titleLbl, BorderLayout.NORTH);
-        invoicePnl.add(custAddressTA, BorderLayout.CENTER);
-        invoicePnl.add(lineItemsTA, BorderLayout.SOUTH);
+        invoicePnl.add(invoiceTA, BorderLayout.CENTER);
 
         mainPnl.add(invoicePnl, BorderLayout.CENTER);
     }
@@ -68,18 +65,24 @@ public class InvoiceFrame extends JFrame
         });
 
         addInvoiceBtn.addActionListener((ActionEvent e) -> {
-            String endLine = "=========================================";
+            String endLine = "================================================";
             String custName = JOptionPane.showInputDialog("What is the customer's name?");
+            address.setCustName(custName);
             String street = JOptionPane.showInputDialog("What is the street address?");
+            address.setStreet(street);
             String city = JOptionPane.showInputDialog("What is the city?");
+            address.setCity(city);
             String state = JOptionPane.showInputDialog("What is the state?");
+            address.setState(state);
             String zip = JOptionPane.showInputDialog("What is the zip code?");
+            address.setZip(zip);
+
             invoice.setCustAddress(new Address(
-                    custName,
-                    street,
-                    city,
-                    state,
-                    zip
+                    address.getCustName(),
+                    address.getStreet(),
+                    address.getCity(),
+                    address.getState(),
+                    address.getZip()
             ));
             do
             {
@@ -102,24 +105,26 @@ public class InvoiceFrame extends JFrame
             while (response == JOptionPane.NO_OPTION);
 
             //print address
-            custAddressTA.append(address.getCustName() + "\n");
-            custAddressTA.append(address.getStreet() + "\n");
-            custAddressTA.append(address.getCity() + ", " + address.getState() + ", " + address.getZip());
+            invoiceTA.append(address.getCustName() + "\n");
+            invoiceTA.append(address.getStreet() + "\n");
+            invoiceTA.append(address.getCity() + ", " + address.getState() + ", " + address.getZip() + "\n\n");
             //print invoice
-            lineItemsTA.append(endLine + "\n");
-            lineItemsTA.append("Item" + "\t\t\t" + "Qty" + "\t" + "Price" + "\t" + "Total" + "\n");
+            invoiceTA.append(endLine + "\n");
+            String categories = String.format("%-20s%-9s%-9s%9s\n", "Item", "Qty", "Price", "Total");
+            invoiceTA.append(categories);
             for (LineItem item : invoice.getLineItems())
             {
                 String productName = item.getProduct().getName();
                 double productPrice = item.getProduct().getUnitPrice();
                 int productQuantity = item.getQuantity();
                 double itemTotal = item.getLineItemTotal();
-                lineItemsTA.append(productName + "\t\t\t" + productQuantity + "\t$" + productPrice + "\t$" + itemTotal + "\n");
+                String line = String.format("%-20s%-9d$%-12.2f$%4.2f\n", productName, productQuantity, productPrice, itemTotal);
+                invoiceTA.append(line);
             }
             invoice.calculateAmountDue();
             double totalAmount = invoice.getAmountDue();
-            lineItemsTA.append(endLine + "\n");
-            lineItemsTA.append("AMOUNT DUE: $" + totalAmount);
+            invoiceTA.append(endLine + "\n");
+            invoiceTA.append("AMOUNT DUE: $" + totalAmount);
         });
 
         ctrlPnl.add(addInvoiceBtn);
